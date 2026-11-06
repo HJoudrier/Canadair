@@ -291,6 +291,7 @@ body.touch .radio-icon { font-size: 20px; }
   .touch-drop { width: 110px; height: 110px; font-size: 44px; }
   .touch-stick { width: 130px; height: 130px; }
   .touch-throttle { bottom: 170px; height: 120px; }
+  .hud-go { font-size: 22px; padding: 6px 18px; bottom: max(12%, 96px); }
 }
 @media (max-width: 640px) {
   .end-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }

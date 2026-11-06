@@ -35,7 +35,7 @@ export class Keyboard {
     out.pause = out.pause || this.hit('Escape', 'KeyP');
     out.go = out.go || this.hit('Enter') || thr > 0;
     out.recenter = out.recenter || this.hit('KeyV');
-    out.override = out.override || this.key('KeyQ');
+    out.override = out.override || this.key('KeyG');
     if (steer || pitch || thr || this.key('Space')) out.active = true;
     return out;
   }
