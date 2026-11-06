@@ -10,7 +10,7 @@ export class WaterView {
     this.group = new THREE.Group();
     this.group.name = 'water-fx';
     parent.add(this.group);
-    const wmat = new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap: toonGradient(), transparent: true, opacity: 0.9 });
+    const wmat = new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap: toonGradient(), transparent: true, opacity: 0.8, depthWrite: false });
     this.drops = new Particles(this.group, { max: quality.drops ?? 420, geometry: new THREE.IcosahedronGeometry(1, 0), material: wmat, name: 'drops' });
     this.splash = new Particles(this.group, { max: quality.splash ?? 320, geometry: new THREE.IcosahedronGeometry(1, 0), name: 'splash' });
     this.steam = new Particles(this.group, { max: 160, geometry: new THREE.IcosahedronGeometry(1, 1), name: 'steam' });
@@ -19,10 +19,20 @@ export class WaterView {
 
   /** Dessine les paquets d'eau en vol (positions tirées de DropSystem). */
   showParcels(parcels) {
-    this.drops.p = parcels.map((d) => ({
-      x: d.x, y: d.y, z: d.z, vx: 0, vy: 0, vz: 0, life: 99, age: 0.5,
-      size: 1.6 + d.age * 2.2, grow: 0, gravity: 0, drag: 0, c0: 0xdff6ff, c1: 0xdff6ff, stretch: 0.6, fade: false,
-    }));
+    // Chaque paquet d'eau = petit nuage de gouttelettes qui s'étale en tombant
+    const list = [];
+    parcels.forEach((d, i) => {
+      for (let k = 0; k < 3; k++) {
+        const h = ((i * 7 + k * 13) * 2654435761 >>> 0) / 4294967296;
+        const spread = 1.5 + d.age * 4;
+        list.push({
+          x: d.x + (h - 0.5) * spread, y: d.y + (k - 1) * 0.8 * (1 + d.age), z: d.z + (((h * 97) % 1) - 0.5) * spread,
+          vx: 0, vy: 0, vz: 0, life: 99, age: 0.5, size: 0.7 + d.age * 0.9, grow: 0, gravity: 0, drag: 0,
+          c0: k ? 0xe8f8ff : 0xbfe9ff, c1: 0xe8f8ff, stretch: 0.8, fade: false,
+        });
+      }
+    });
+    this.drops.p = list;
     this.drops.update(0);
   }
 

@@ -50,7 +50,7 @@ export class FireView {
     this.smoke = new Particles(this.group, {
       max: quality.smoke ?? 260, name: 'smoke',
       geometry: new THREE.IcosahedronGeometry(1, 1),
-      material: new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap: toonGradient() }),
+      material: new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap: toonGradient(), transparent: true, opacity: 0.8, depthWrite: false }),
     });
     this.shown = [];
     this.pickT = 0;
@@ -120,7 +120,7 @@ export class FireView {
           x: p.x + (Math.random() - 0.5) * 20, y: y + 8, z: p.z + (Math.random() - 0.5) * 20,
           vx: wind.x * (2 + wind.speed * 8), vy: 7 + Math.random() * 5, vz: wind.z * (2 + wind.speed * 8),
           size: 5 + Math.random() * 4, grow: 3.2, life: 8 + Math.random() * 3, drag: 0.05,
-          color: 0x4a4644, colorEnd: 0xd9d6d0,
+          color: 0x77716b, colorEnd: 0xf0eeea,
         });
       }
       this.smokeAcc.set(f.id, acc);

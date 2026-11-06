@@ -34,7 +34,7 @@ export class VrHud {
   /** Place l'écran sur le tableau de bord (cockpit) ou devant soi (vue extérieure). */
   attach(parent, cockpit) {
     parent.add(this.mesh);
-    if (cockpit) { this.mesh.position.set(0, 0.46, -7.0); this.mesh.rotation.set(-0.35, 0, 0); this.mesh.scale.setScalar(1); }
+    if (cockpit) { this.mesh.position.set(0, 0.1, -6.98); this.mesh.rotation.set(-0.5, 0, 0); this.mesh.scale.setScalar(1); }
     else { this.mesh.position.set(0, -0.55, -1.3); this.mesh.rotation.set(-0.5, 0, 0); this.mesh.scale.setScalar(0.8); }
   }
 

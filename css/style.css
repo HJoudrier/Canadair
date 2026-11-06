@@ -197,13 +197,13 @@ body.in-menu #hud, body.in-menu #touch, body.in-menu #radio { visibility: hidden
 }
 body.touch .hud-stats { display: none; }
 .hud-go {
-  position: absolute; left: 50%; bottom: 18%; transform: translateX(-50%); pointer-events: auto;
+  position: absolute; left: 50%; bottom: max(18%, 120px); transform: translateX(-50%); pointer-events: auto;
   font-size: clamp(26px, 5vw, 40px); font-weight: 700; padding: 10px 26px; background: var(--green); color: var(--white);
   -webkit-text-stroke: 1px var(--ink); animation: pulse2 1s ease-in-out infinite;
 }
 @keyframes pulse2 { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.07); } }
 .hud-gohint {
-  position: absolute; left: 50%; bottom: 20%; transform: translateX(-50%);
+  position: absolute; left: 50%; bottom: max(20%, 110px); transform: translateX(-50%);
   font-size: clamp(20px, 3.4vw, 32px); font-weight: 700; color: var(--white); white-space: nowrap;
   -webkit-text-stroke: 1.5px var(--ink); paint-order: stroke fill; background: rgba(52, 199, 89, 0.85);
   border: 4px solid var(--ink); border-radius: 18px; padding: 6px 18px;
@@ -232,6 +232,9 @@ body.touch .hud-stats { display: none; }
 .radio-who { color: var(--yellow); font-weight: 700; white-space: nowrap; }
 .radio-who::after { content: ' :'; }
 @keyframes slideup { from { transform: translate(-50%, 30px); opacity: 0; } }
+/* Sur téléphone, la radio reste entre le joystick et le bouton de largage */
+body.touch .radio { max-width: calc(100% - 400px); min-width: 260px; font-size: 14px; padding: 6px 10px; }
+body.touch .radio-icon { font-size: 20px; }
 @keyframes shake { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
 
 /* ---------- Commandes tactiles ---------- */
@@ -258,7 +261,7 @@ body.touch .hud-stats { display: none; }
 }
 .thr-fill { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(0deg, var(--red), var(--yellow)); }
 .thr-label { position: absolute; top: 4px; width: 100%; text-align: center; font-size: 22px; }
-.touch-top { position: absolute; right: max(170px, env(safe-area-inset-right)); bottom: 30px; display: flex; gap: 10px; }
+.touch-top { position: absolute; right: calc(28px + clamp(110px, 17vmin, 190px)); top: 14px; display: flex; gap: 10px; }
 .touch-small { width: 56px; height: 56px; border-radius: 16px; font-size: 26px; padding: 0; }
 
 .toast {

@@ -9,6 +9,7 @@ function add(parent, geom, color, pos, opts = {}) {
   m.position.set(pos[0], pos[1], pos[2]);
   if (opts.rot) m.rotation.set(opts.rot[0], opts.rot[1], opts.rot[2]);
   if (opts.scale) m.scale.set(opts.scale[0], opts.scale[1], opts.scale[2]);
+  if (opts.name) m.name = opts.name;
   if (opts.outline) {
     const o = new THREE.Mesh(geom, OUTLINE);
     o.name = 'outline';
@@ -60,9 +61,9 @@ export function createCanadair(slot = 0) {
   add(exterior, new THREE.ConeGeometry(1.25, 4.5, 12).rotateX(Math.PI / 2), liv.body, [0, 0.55, 10.4], { scale: [1, 1.1, 1], rot: [-0.18, 0, 0], outline: true });
   // Vitres du cockpit
   const glass = 0x274b7a;
-  add(exterior, new THREE.BoxGeometry(2.3, 0.75, 0.25), glass, [0, 1.05, -7.55], { rot: [-0.55, 0, 0] });
+  add(exterior, new THREE.BoxGeometry(2.3, 0.75, 0.25), glass, [0, 1.05, -7.55], { rot: [-0.55, 0, 0], name: 'glass' });
   for (const s of [-1, 1]) {
-    add(exterior, new THREE.BoxGeometry(0.12, 0.65, 1.7), glass, [s * 1.5, 0.75, -6.6]);
+    add(exterior, new THREE.BoxGeometry(0.12, 0.65, 1.7), glass, [s * 1.5, 0.75, -6.6], { name: 'glass' });
     for (let k = 0; k < 4; k++) add(exterior, new THREE.BoxGeometry(0.12, 0.5, 0.6), glass, [s * 1.55, 0.6, -3.2 + k * 1.6]);
   }
 
@@ -124,25 +125,25 @@ export function createCanadair(slot = 0) {
   const cockpit = new THREE.Group();
   cockpit.visible = false;
   const dark = 0x3a3f4a;
-  add(cockpit, new THREE.BoxGeometry(2.8, 0.55, 0.7), dark, [0, 0.15, -7.35]);           // tableau de bord
-  add(cockpit, new THREE.BoxGeometry(2.9, 0.12, 2.6), liv.body, [0, 1.55, -6.3]);          // plafond
+  add(cockpit, new THREE.BoxGeometry(2.8, 0.5, 0.7), dark, [0, -0.2, -7.35]);            // tableau de bord
+  add(cockpit, new THREE.BoxGeometry(2.9, 0.1, 1.6), 0x5b6270, [0, 1.9, -5.4]);            // plafond
   for (const s of [-1, 1]) {
     add(cockpit, new THREE.BoxGeometry(0.12, 0.95, 3.2), 0xe8e2d0, [s * 1.45, 0.0, -6.1]); // parois
-    add(cockpit, new THREE.BoxGeometry(0.14, 1.1, 0.14), dark, [s * 1.2, 1.0, -7.35], { rot: [-0.5, 0, 0] }); // montants
+    add(cockpit, new THREE.BoxGeometry(0.07, 1.1, 0.07), dark, [s * 1.25, 1.0, -7.35], { rot: [-0.5, 0, 0] }); // montants
     // Manches (yokes)
     add(cockpit, new THREE.CylinderGeometry(0.05, 0.05, 0.6, 6).rotateX(Math.PI / 2), dark, [s * 0.55, 0.05, -6.8]);
     add(cockpit, new THREE.TorusGeometry(0.2, 0.04, 6, 14, Math.PI), 0x222222, [s * 0.55, 0.12, -6.5], { rot: [0, 0, Math.PI] });
   }
-  add(cockpit, new THREE.BoxGeometry(0.1, 0.7, 0.1), dark, [0, 1.05, -7.5], { rot: [-0.5, 0, 0] });
+  add(cockpit, new THREE.BoxGeometry(0.04, 0.7, 0.04), dark, [0, 1.05, -7.5], { rot: [-0.5, 0, 0] });
   // Écran du tableau de bord (rempli par le HUD VR)
   const screen = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.42), new THREE.MeshBasicMaterial({ color: 0x0b1a2a }));
-  screen.position.set(0, 0.45, -7.02);
-  screen.rotation.x = -0.35;
+  screen.position.set(0, 0.07, -7.0);
+  screen.rotation.x = -0.5;
   cockpit.add(screen);
   root.add(cockpit);
 
   const eye = new THREE.Object3D();
-  eye.position.set(0, 0.85, -6.1);
+  eye.position.set(0, 0.95, -6.3);
   root.add(eye);
 
   const api = {
@@ -150,7 +151,8 @@ export function createCanadair(slot = 0) {
     spin: 0,
     setCockpit(on) {
       cockpit.visible = on;
-      exterior.traverse((o) => { if (o.name === 'outline') o.visible = !on; });
+      // Depuis l'intérieur : pas de contours ni de vitres extérieures devant les yeux
+      exterior.traverse((o) => { if (o.name === 'outline' || o.name === 'glass') o.visible = !on; });
     },
     update(p, dt, rollScale = 1, pitchScale = 1) {
       root.position.set(p.x, p.y, p.z);

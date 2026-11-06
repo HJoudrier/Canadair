@@ -56,18 +56,22 @@ export class Gyro {
   /** À appeler directement dans un geste utilisateur (clic) pour iOS. */
   async enable() {
     if (!Gyro.supported()) return false;
+    if (!this.listening) {
+      // On écoute dans tous les cas : si aucun événement n'arrive, le jeu passe au joystick tactile
+      window.addEventListener('deviceorientation', this.onOrientation);
+      this.listening = true;
+    }
+    this.enabled = true;
     try {
       const DOE = window.DeviceOrientationEvent;
       if (typeof DOE.requestPermission === 'function') {
         const r = await DOE.requestPermission();
-        if (r !== 'granted') return false;
+        if (r === 'denied') { this.enabled = false; return false; }
       }
     } catch (e) {
-      return false;
+      // Pas de geste utilisateur ou API partielle : on garde l'écoute
     }
-    window.addEventListener('deviceorientation', this.onOrientation);
-    this.enabled = true;
-    return true;
+    return this.enabled;
   }
 
   calibrate() {
