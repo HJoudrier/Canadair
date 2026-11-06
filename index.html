@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#3f9be8">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Jeu de Canadair pour enfants : décolle, écope et éteins les feux de forêt. Téléphone, manette, coopération et VR.">
+  <title>Canadair – Pompiers du ciel</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.min.js" } }
+  </script>
+</head>
+<body class="in-menu">
+  <div id="app">
+    <div id="hud"></div>
+    <div id="touch"></div>
+
+    <div id="radio" class="radio hidden" aria-live="polite">
+      <span class="radio-icon">📻</span>
+      <span class="radio-who" data-i18n="radio.base"></span>
+      <span class="radio-text"></span>
+    </div>
+
+    <!-- Écran titre -->
+    <section class="screen" id="screen-title">
+      <div class="sky-deco"><span class="cloud c1"></span><span class="cloud c2"></span><span class="cloud c3"></span></div>
+      <div class="logo">
+        <svg class="logo-plane" viewBox="0 0 220 90" aria-hidden="true">
+          <g stroke="#1d2433" stroke-width="4" stroke-linejoin="round">
+            <rect x="40" y="16" width="140" height="10" rx="5" fill="#ffd21f"/>
+            <path d="M20 52 Q22 34 52 32 L168 32 Q186 34 200 22 L206 24 Q200 44 186 56 L60 64 Q26 66 20 52 Z" fill="#ffd21f"/>
+            <path d="M186 56 L200 22 L206 24 L198 54 Z" fill="#e63946"/>
+            <rect x="182" y="8" width="26" height="8" rx="4" fill="#e63946"/>
+            <path d="M28 46 Q32 38 46 38 L52 46 Z" fill="#274b7a"/>
+            <rect x="74" y="24" width="22" height="12" rx="6" fill="#ffd21f"/>
+            <rect x="126" y="24" width="22" height="12" rx="6" fill="#ffd21f"/>
+            <path d="M60 64 L176 58" fill="none"/>
+            <rect x="46" y="44" width="150" height="5" fill="#e63946" stroke="none"/>
+          </g>
+          <g class="drops" fill="#2fa8ff"><circle cx="100" cy="76" r="5"/><circle cx="116" cy="82" r="4"/><circle cx="86" cy="84" r="4"/></g>
+        </svg>
+        <h1 data-i18n="title">Canadair</h1>
+        <p class="subtitle" data-i18n="subtitle">Les pompiers du ciel</p>
+      </div>
+      <div class="menu-buttons">
+        <button class="big primary" data-action="solo"><span class="ico">✈️</span><span class="txt"><b data-i18n="menu.solo"></b><small data-i18n="menu.solo.desc"></small></span></button>
+        <button class="big" data-action="split"><span class="ico">👥</span><span class="txt"><b data-i18n="menu.split"></b><small data-i18n="menu.split.desc"></small></span></button>
+        <button class="big" data-action="shared"><span class="ico">🧑‍🧒</span><span class="txt"><b data-i18n="menu.shared"></b><small data-i18n="menu.shared.desc"></small></span></button>
+        <button class="big vr hidden" data-action="vr"><span class="ico">🥽</span><span class="txt"><b data-i18n="menu.vr"></b><small data-i18n="menu.vr.desc"></small></span></button>
+      </div>
+      <div class="menu-row">
+        <button class="small" data-action="settings">⚙️ <span data-i18n="menu.settings"></span></button>
+        <button class="small" data-action="lang"><span class="lang-flag"></span></button>
+      </div>
+      <div class="pads-status"></div>
+    </section>
+
+    <!-- Choix du niveau -->
+    <section class="screen" id="screen-diff">
+      <h2 data-i18n="diff.title"></h2>
+      <div class="cards">
+        <button class="card primary" data-diff="easy"><span class="ico">🐣</span><b data-i18n="diff.easy"></b><small data-i18n="diff.easy.desc"></small></button>
+        <button class="card" data-diff="hard"><span class="ico">🦅</span><b data-i18n="diff.hard"></b><small data-i18n="diff.hard.desc"></small></button>
+      </div>
+      <div class="menu-row">
+        <button class="small toggle" data-setting="mission" data-cycle="1"></button>
+        <button class="small" data-action="back">⬅ <span data-i18n="menu.back"></span></button>
+      </div>
+    </section>
+
+    <!-- Deux joueurs : qui joue avec quelle manette -->
+    <section class="screen" id="screen-join">
+      <h2 data-i18n="join.title"></h2>
+      <div class="join-slots">
+        <div class="slot" data-slot="0"><span class="slot-ico">🎮</span><b class="slot-name"></b><span class="slot-state"></span></div>
+        <div class="slot" data-slot="1"><span class="slot-ico">🎮</span><b class="slot-name"></b><span class="slot-state"></span></div>
+      </div>
+      <p class="join-help" data-i18n="join.need2"></p>
+      <div class="menu-row">
+        <button class="big primary" data-action="startJoin">🚀 <span data-i18n="join.start"></span></button>
+        <button class="small" data-action="back">⬅ <span data-i18n="menu.back"></span></button>
+      </div>
+    </section>
+
+    <!-- Réglages -->
+    <section class="screen" id="screen-settings">
+      <h2 data-i18n="settings.title"></h2>
+      <div class="settings-list">
+        <button class="setting" data-setting="lang" data-cycle="1"></button>
+        <button class="setting" data-setting="arrows" data-cycle="1"></button>
+        <button class="setting" data-setting="voice" data-cycle="1"></button>
+        <button class="setting" data-setting="volume" data-cycle="1"></button>
+        <button class="setting" data-setting="invert" data-cycle="1"></button>
+        <button class="setting" data-setting="quality" data-cycle="1"></button>
+        <button class="setting touch-only" data-setting="stick" data-cycle="1"></button>
+        <button class="setting" data-setting="mission" data-cycle="1"></button>
+        <button class="setting" data-setting="seed"></button>
+      </div>
+      <button class="small" data-action="back">⬅ <span data-i18n="menu.back"></span></button>
+    </section>
+
+    <!-- Chargement -->
+    <section class="screen" id="screen-loading">
+      <div class="loading-plane">✈️</div>
+      <p data-i18n="loading"></p>
+    </section>
+
+    <!-- Pause -->
+    <section class="screen overlay" id="screen-pause">
+      <h2>⏸ <span data-i18n="pause.title"></span></h2>
+      <button class="big primary" data-action="resume">▶ <span data-i18n="pause.resume"></span></button>
+      <button class="small" data-action="camera">🎥 <span data-i18n="pause.camera"></span></button>
+      <button class="small gyro-only" data-action="calibrate">📱 <span data-i18n="pause.calibrate"></span></button>
+      <button class="small" data-action="quit">🏠 <span data-i18n="pause.quit"></span></button>
+    </section>
+
+    <!-- Fin de mission -->
+    <section class="screen overlay" id="screen-end">
+      <h2 class="end-title"></h2>
+      <div class="stars"><span>★</span><span>★</span><span>★</span></div>
+      <div class="end-stats"></div>
+      <div class="menu-row">
+        <button class="big primary" data-action="replay">🔁 <span data-i18n="end.replay"></span></button>
+        <button class="small" data-action="newmap">🗺️ <span data-i18n="end.new"></span></button>
+        <button class="small" data-action="menu">🏠 <span data-i18n="end.menu"></span></button>
+      </div>
+    </section>
+
+    <div id="rotate" class="rotate-overlay"><div class="rot-ico">📱</div><p data-i18n="rotate"></p></div>
+    <div id="toast" class="toast hidden"></div>
+  </div>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

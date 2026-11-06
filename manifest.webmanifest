@@ -1,0 +1,15 @@
+{
+  "name": "Canadair – Pompiers du ciel",
+  "short_name": "Canadair",
+  "description": "Pilote un Canadair et éteins les feux de forêt !",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#3f9be8",
+  "theme_color": "#3f9be8",
+  "lang": "fr",
+  "icons": [
+    { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
