@@ -15,11 +15,35 @@ export class Gamepads {
     this.cur = new Map();
     this.navHold = new Map();
     this.lastUse = new Map();
+    this.everSeen = false;
+    this.onWake = null;      // appelé quand le navigateur signale une manette ou un appui
+    // Les événements réveillent la détection : sur Xbox/Chromium, la manette n'apparaît
+    // dans getGamepads() qu'après un premier appui.
+    if (typeof window !== 'undefined') {
+      window.addEventListener('gamepadconnected', () => { if (this.onWake) this.onWake(); });
+      window.addEventListener('gamepaddisconnected', (e) => {
+        this.cur.delete(e.gamepad.index);
+        this.prev.delete(e.gamepad.index);
+      });
+    }
+  }
+
+  /** Lit la liste brute des manettes (tolère les anciens préfixes et les erreurs du navigateur). */
+  rawList() {
+    try {
+      const get = navigator.getGamepads || navigator.webkitGetGamepads;
+      const l = get ? get.call(navigator) : null;
+      return l ? Array.from(l) : [];
+    } catch (_) {
+      return [];
+    }
   }
 
   poll() {
-    const list = navigator.getGamepads ? Array.from(navigator.getGamepads()) : [];
-    this.pads = list.filter((p) => p && p.connected).sort((a, b) => a.index - b.index);
+    // `connected` peut être absent sur certains navigateurs (Edge Xbox) : seul `false` exclut une manette.
+    const list = this.rawList();
+    this.pads = list.filter((p) => p && p.connected !== false).sort((a, b) => a.index - b.index);
+    this.everSeen = this.everSeen || this.pads.length > 0;
     for (const p of this.pads) {
       this.prev.set(p.index, this.cur.get(p.index) || []);
       const b = p.buttons.map((x) => x.pressed || x.value > 0.5);

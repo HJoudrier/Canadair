@@ -19,6 +19,7 @@ export default {
     'menu.settings': 'Settings',
     'menu.back': 'Back',
     'menu.pads': 'Controllers: {n}',
+    'menu.padsHint': 'Press a button on your controller',
     'menu.vrHint': 'VR headset detected',
     'menu.split.desc': 'One water bomber each, split screen.',
     'menu.shared.desc': 'One plane, two pilots: a grown-up can help a child (hold LB to take control).',

@@ -379,7 +379,7 @@ export class Game {
       const c = this.controls[pl.slot] || { kind: 'any' };
       let goHint = t('hud.goHint.key');
       if (this.vr) goHint = t('hud.goHint.vr');
-      else if (c.kind === 'pad' || (c.kind === 'any' && dev.gamepads.count > 0)) goHint = t('hud.goHint.pad');
+      else if (c.kind === 'pad' || (c.kind === 'any' && (dev.gamepads.count > 0 || dev.console))) goHint = t('hud.goHint.pad');
       const state = {
         game: this, plane: p, target: pl.target, fireCount, forestPct,
         scoopMaxAlt: this.diff.scoopMaxAlt, flash: pl.flash, flashCls: pl.flashCls,

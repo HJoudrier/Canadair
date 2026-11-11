@@ -35,9 +35,21 @@ setLang(settings.lang);
 document.documentElement.lang = settings.lang;
 
 // ---------- Appareil ----------
-// Edge sur Xbox : désactive le curseur « souris » pour recevoir la manette
-try { navigator.gamepadInputEmulation = 'gamepad'; } catch (_) { /* autres navigateurs */ }
-const touch = isTouchDevice();
+// Edge sur Xbox : par défaut la manette simule une souris/un clavier et la page ne voit aucune
+// manette. `gamepadInputEmulation = 'gamepad'` rend les boutons à l'API Gamepad. On le réaffirme
+// souvent (démarrage, focus, clic, événements manette) car certaines versions l'ignorent au chargement.
+const isXbox = /Xbox/i.test(navigator.userAgent);
+function applyPadEmulation() {
+  try {
+    if ('gamepadInputEmulation' in navigator || isXbox) navigator.gamepadInputEmulation = 'gamepad';
+  } catch (_) { /* autres navigateurs */ }
+}
+applyPadEmulation();
+for (const ev of ['focus', 'pointerdown', 'click', 'keydown', 'gamepadconnected', 'visibilitychange']) {
+  window.addEventListener(ev, applyPadEmulation);
+}
+// L'Xbox annonce parfois un écran tactile : ce n'est pas un téléphone.
+const touch = !isXbox && isTouchDevice();
 const isQuest = /OculusBrowser|Quest|Pacific/i.test(navigator.userAgent);
 const isMobile = touch && Math.min(screen.width, screen.height) < 900;
 document.body.classList.toggle('touch', touch);
@@ -84,6 +96,7 @@ const devices = {
   touch: new TouchControls(document.getElementById('touch'), t),
   gyro: new Gyro(),
   xr: new XRInput(renderer),
+  console: isXbox,
 };
 const menu = new Menu(sfx);
 const hudRoot = document.getElementById('hud');
@@ -338,11 +351,13 @@ async function startVR() {
 
 // ---------- Boucle principale ----------
 let last = performance.now();
+let lastEmu = 0;
 renderer.setAnimationLoop(() => {
   const now = performance.now();
   const dt = Math.min(0.05, (now - last) / 1000);
   last = now;
   devices.gamepads.poll();
+  if (devices.gamepads.count === 0 && now - lastEmu > 1000) { applyPadEmulation(); lastEmu = now; }
   const menuOpen = !!menu.current;
   const nav = [...devices.keyboard.nav(), ...devices.gamepads.nav()];
 
@@ -374,7 +389,7 @@ renderer.setAnimationLoop(() => {
     if (menu.current === 'title') {
       const n = devices.gamepads.count;
       const el = menu.el('title').querySelector('.pads-status');
-      const txt = n ? '🎮 ' + t('menu.pads', { n }) : '';
+      const txt = n ? '🎮 ' + t('menu.pads', { n }) : (isXbox ? '🎮 ' + t('menu.padsHint') : '');
       if (el.textContent !== txt) el.textContent = txt;
     }
   }

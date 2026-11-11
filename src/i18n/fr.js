@@ -34,6 +34,7 @@ export default {
     'menu.settings': 'Réglages',
     'menu.back': 'Retour',
     'menu.pads': 'Manettes : {n}',
+    'menu.padsHint': 'Appuie sur un bouton de la manette',
     'menu.vrHint': 'Casque VR détecté',
     'menu.split.desc': 'Chacun son Canadair, écran coupé en deux.',
     'menu.shared.desc': 'Un seul avion, deux pilotes : l\'adulte peut aider l\'enfant (bouton LB = prendre les commandes).',
